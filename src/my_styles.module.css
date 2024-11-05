@@ -1,0 +1,11 @@
+.buttonContainer{
+    display:flex;
+    position: fixed;
+    flex-direction: column;
+    top:10%;
+    left: 10px;
+    width: 100px;
+    gap: 10px;
+    height: 100px;
+    border-radius: 1;
+}

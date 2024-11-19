@@ -8,6 +8,8 @@ import geodata2 from './State.json';               //Karnataka state border
 import geodata3 from './District.json';            //District border
 import geodata4 from './Taluk.json';               //Taluk border
 import styles from './my_styles.module.css';
+import fetchWeather from './weatherApi';  // Import the fetchWeather function
+
 
 
 // Fix for marker icons not appearing
@@ -62,7 +64,39 @@ const style = () => {
 const MyMap = () => {
   //map coordinates
  // const position = [28.6139, 77.2090]; // New Delhi coordinates
-  const position = [20.5937, 78.9629]; // Center of India coordinates
+ // Initial position for the marker (you can set this to your preferred initial coordinates)
+ const [position, setPosition] = useState([20.5937, 78.9629]); // Center of India
+ const [weather, setWeather] = useState(null); // To store the weather data
+ const [loading, setLoading] = useState(false); // To show loading state
+
+  // Function to handle when the marker drag ends
+  const handleDragEnd = async (event) => {
+    const { lat, lng } = event.target.getLatLng();
+    setPosition([lat, lng]); // Update the position state
+
+    setLoading(true); // Set loading state to true while fetching data
+    try {
+      const weatherData = await fetchWeather(lat, lng); // Fetch weather data for the new coordinates
+      setWeather(weatherData); // Set the fetched weather data to state
+    } catch (error) {
+      setWeather(null); // In case of error, set weather to null
+    }
+    setLoading(false); // Set loading state to false once data is fetched
+  };
+
+// Fetch weather data when the component mounts
+useEffect(() => {
+  const fetchWeatherData = async () => {
+    try {
+      const weatherData = await fetchWeather(20.5937, 78.9629); // Pass coordinates for the weather data
+      setWeather(weatherData);  // Store the fetched weather data in the state
+    } catch (error) {
+      console.error('Error fetching weather:', error);
+    }
+  };
+  fetchWeatherData(); // Call the fetchWeather function
+  }, []); // Empty dependency array to call only on mount
+
 
   const [showState, setShowState] = useState(false); // Toggle for State layer
   const [showDistrict, setShowDistrict] = useState(false); // Toggle for District layer
@@ -80,6 +114,7 @@ const MyMap = () => {
     setShowTaluk((prev) => !prev);
   };
 
+  
 
   return (
     <div>
@@ -88,10 +123,29 @@ const MyMap = () => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
-      <Marker position={position}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
+      {/* <Marker position={position}> */}
+      <Marker
+          position={position}
+          draggable={true} // Make the marker draggable
+          eventHandlers={{
+            dragend: handleDragEnd, // Update position when dragging ends
+          }}
+        >
+      <Popup>
+            Current coordinates: {position[0].toFixed(4)}, {position[1].toFixed(4)}
+            {weather ? (
+              <div>
+                <h3>Weather Information</h3>
+                <p><strong>Location:</strong> {weather.name}</p>
+                <p><strong>Temperature:</strong> {weather.main.temp} °C</p>
+                <p><strong>Weather:</strong> {weather.weather[0].description}</p>
+                <p><strong>Humidity:</strong> {weather.main.humidity} %</p>
+                <p><strong>Wind Speed:</strong> {weather.wind.speed} m/s</p>
+              </div>
+            ) : (
+              <p>Loading weather data...</p>
+            )}
+          </Popup>
       </Marker>
       {/* <GeoJSON data={geodata} style={getStyle}/>
       <GeoJSON data={geodata1} style={style}/> */}

@@ -9,6 +9,7 @@ import geodata3 from './District.json';            //District border
 import geodata4 from './Taluk.json';               //Taluk border
 import styles from './my_styles.module.css';
 
+
 // Fix for marker icons not appearing
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -16,7 +17,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
-
 
 
 //district borders

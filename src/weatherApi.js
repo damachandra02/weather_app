@@ -9,7 +9,7 @@ const fetchWeather = async (lat, lon) => {
     return;
   }
 
-  console.log('API Key:', API_KEY);  // Log the API key to verify it is loaded correctly
+  //console.log('API Key:', API_KEY);  // Log the API key to verify it is loaded correctly
   
   try {
     const response = await axios.get(

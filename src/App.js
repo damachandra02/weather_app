@@ -1,5 +1,5 @@
 import React,{useEffect,useState}from 'react';
-import { MapContainer, TileLayer, Marker, Popup ,GeoJSON} from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup ,GeoJSON,useMap} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 //import geodata from './india_district_states.json';   //contains all state and district border
@@ -9,6 +9,7 @@ import geodata3 from './District.json';            //District border
 import geodata4 from './Taluk.json';               //Taluk border
 import styles from './my_styles.module.css';
 import fetchWeather from './weatherApi';  // Import the fetchWeather function
+import DistrictDropdown from './DistrictDropdown'; // Importing the DistrictDropdown component
 
 
 
@@ -66,6 +67,7 @@ const MyMap = () => {
  // const position = [28.6139, 77.2090]; // New Delhi coordinates
  // Initial position for the marker (you can set this to your preferred initial coordinates)
  const [position, setPosition] = useState([20.5937, 78.9629]); // Center of India
+ const [zoomLevel, setZoomLevel] = useState(4.5);  // Default zoom level
  const [weather, setWeather] = useState(null); // To store the weather data
  const [loading, setLoading] = useState(false); // To show loading state
 
@@ -114,11 +116,29 @@ useEffect(() => {
     setShowTaluk((prev) => !prev);
   };
 
-  
+ // Function to handle district selection and zoom to the district's coordinates
+ const handleDistrictSelect = (districtId, latitude, longitude) => {
+  console.log(`Zooming to district ${districtId} at coordinates: ${latitude}, ${longitude}`);
+  setPosition([latitude, longitude]); // Update the position to the selected district's coordinates
+  setZoomLevel(9.4); // Adjust the zoom level to zoom into the district (you can modify this)
+};
+
+// This component will allow direct manipulation of the map when the position or zoom changes
+const MapViewUpdater = () => {
+  const map = useMap(); // Get the map instance
+  useEffect(() => {
+    if (map) {
+      map.setView(position, zoomLevel); // Update the map's center and zoom level
+    }
+  }, [position, zoomLevel, map]); // Re-run when position or zoomLevel changes
+  return null; // This component doesn't render anything
+};
+
 
   return (
     <div>
-    <MapContainer center={position} zoom={4.5} scrollWheelZoom={false} style={{height:'100vh',width:'100vh',marginLeft:'50%'}}>
+    <MapContainer center={position} zoom={zoomLevel} scrollWheelZoom={true} style={{height:'100vh',width:'100vh',marginLeft:'50%'}}>
+    <MapViewUpdater />
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -153,6 +173,13 @@ useEffect(() => {
       {showDistrict && <GeoJSON data={geodata3}/>}
       {showTaluk && <GeoJSON data={geodata4}/>}       
     </MapContainer>
+
+    <div className={styles.DistrictDropdown}>
+      {/* Use the DistrictDropdown component here and pass the handleDistrictSelect callback */}
+    <DistrictDropdown onDistrictSelect={handleDistrictSelect} />
+    </div>
+    
+
     <div className={styles.buttonContainer}>
         <button  onClick={handleToggleState}>
           {showState ? 'Hide State Layer' : 'Show State Layer'}

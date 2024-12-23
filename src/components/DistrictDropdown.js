@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 // Import the districts JSON data
-import districtsData from './District.json';  // Adjust the path according to your file location
+import districtsData from '../data/District.json';  // Adjust the path according to your file location
 
 const DistrictDropdown = ({ onDistrictSelect, selectedDistrictId, setSelectedDistrictId  }) => {
   const [districts, setDistricts] = useState([]);

@@ -3,14 +3,14 @@ import { MapContainer, TileLayer, Marker, Popup ,GeoJSON,useMap} from 'react-lea
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 //import geodata from './india_district_states.json';   //contains all state and district border
-import geodata1 from './india_district.json';           // contains all state borders
-import geodata2 from './State.json';               //Karnataka state border
-import geodata3 from './District.json';            //District border
-import geodata4 from './Taluk.json';               //Taluk border
-import styles from './my_styles.module.css';
-import fetchWeather from './weatherApi';  // Import the fetchWeather function
-import DistrictDropdown from './DistrictDropdown'; // Importing the DistrictDropdown component
-import districtsData from './District.json';  // Import the districts GeoJSON
+import geodata1 from './data/india_district.json';           // contains all state borders
+import geodata2 from './data/State.json';               //Karnataka state border
+import geodata3 from './data/District.json';            //District border
+import geodata4 from './data/Taluk.json';               //Taluk border
+import styles from './styles/my_styles.module.css';
+import fetchWeather from './services/weatherApi';  // Import the fetchWeather function
+import DistrictDropdown from './components/DistrictDropdown'; // Importing the DistrictDropdown component
+import districtsData from './data/District.json';  // Import the districts GeoJSON
 
 
 

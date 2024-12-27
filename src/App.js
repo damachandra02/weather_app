@@ -11,6 +11,10 @@ import styles from './my_styles.module.css';
 import fetchWeather from './weatherApi';  // Import the fetchWeather function
 import DistrictDropdown from './DistrictDropdown'; // Importing the DistrictDropdown component
 import districtsData from './District.json';  // Import the districts GeoJSON
+import HeatMap from './heat_map'; // Import the HeatMap component
+import talukData from './Taluk.json'; // Taluk data
+import HeatMap1 from './heat_map1'; // Import the HeatMap component
+
 
 
 
@@ -61,7 +65,7 @@ const style = (feature) => {
     opacity: 1, // Full opacity for the border
     color: 'black', // Border color
     dashArray: '1', // Dashed line for the borders
-    fillOpacity: isKarnataka ? 0 : 1, // No fill for Karnataka, other states with some opacity
+    fillOpacity: isKarnataka ? 0 : 0, // No fill for Karnataka, other states with some opacity
   };
 };
 
@@ -104,8 +108,15 @@ const MyMap = () => {
  const [loading, setLoading] = useState(false); // To show loading state
 
  const [selectedDistrictId, setSelectedDistrictId] = useState(null); // Track selected district ID
+ const [selectedTalukId, setSelectedTalukId] = useState(null); // Selected taluk ID
+
   const [highlightedDistrict, setHighlightedDistrict] = useState(null); // Track highlighted district
   const [districts, setDistricts] = useState([]);
+  const [highlightedTaluks, setHighlightedTaluks] = useState([
+
+  ]); // New state to store highlighted taluks
+  
+
 
   useEffect(() => {
     setDistricts(districtsData.features); // Set all districts data
@@ -113,6 +124,7 @@ const MyMap = () => {
   
   // Handle district selection
   const handleDistrictSelect = (districtId, coordinates) => {
+    console.log('District selected:', districtId, coordinates);
     const selectedDistrict = districtsData.features.find(
       (feature) => feature.id === districtId
     );
@@ -123,9 +135,32 @@ const MyMap = () => {
       setPosition([center[1], center[0]]);
       setZoomLevel(8); // Zoom in on the district
     }
-  };
 
+  //  Now filter taluks based on the selected district ID
+    const filteredTaluks = talukData.features.filter(
+      (feature) => feature.district_id ===districtId // Assuming taluk data has "district_id"
+      
+    );
+    
+    setHighlightedTaluks(filteredTaluks); // Set the taluks to be highlighted on the map
+
+
+    // // If we have matching taluks, we can update the map with their coordinates
+    // if (filteredTaluks.length > 0) {
+    //   // For example, display the first taluk's coordinates on the map
+    //   const talukCoordinates = filteredTaluks[0].geometry.coordinates[0][0][0]; // Getting coordinates of the first taluk
+    //   setPosition([talukCoordinates[1], talukCoordinates[0]]);
+    //   setZoomLevel(8); // Zoom into the taluk level
+    // }
+  };
   
+  // Handle taluk selection
+  // const handleTalukSelect = (districtId, talukId) => {
+  //   console.log('Taluk selected:', talukId);
+    // Handle logic for updating the map or related functionality for the selected taluk
+  // };
+
+
   // Function to handle when the marker drag ends
   const handleDragEnd = async (event) => {
     const { lat, lng } = event.target.getLatLng();
@@ -206,22 +241,54 @@ const getDistrictStyle = (feature) => {
     weight: 0,
     opacity: 1,
     color: 'black',
-    dashArray: '3',
+    dashArray: '1',
     fillOpacity: 0,
   };
 };
 
+const getTalukStyle = (feature) => {
+  // Check if the current Taluk is the selected Taluk
+  if (highlightedTaluks.length > 0 && highlightedTaluks.find(taluk => taluk.id === feature.id)) {
+    // Apply style to the selected Taluk
+    return {
+      fillColor: 'green', // Color for the selected Taluk
+      weight: 3,           // Thicker border for the selected Taluk
+      opacity: 1,
+      dashArray: '1',   
+      color: 'black',      // Border color
+      fillOpacity: 0.5,    // Semi-transparent fill
+    };
+  }
+
+  // Default style for unselected Taluks (transparent borders)
+  return {
+    fillColor: 'transparent',  // No fill color for unselected Taluks
+    weight: 0,                 // Thin border
+    opacity: 1,
+    color: 'black',            // Border color
+    dashArray: '0',            // Dashed border for Taluks
+    fillOpacity: 1,            // No fill color for unselected Taluks
+  };
+};
+
+
+
   return (
     <div>
     <MapContainer center={position} zoom={zoomLevel} scrollWheelZoom={true} style={{height:'100vh',width:'100vh',marginLeft:'50%'}}>
+      {/* <HeatMap1/> */}
+       <HeatMap />
     <MapViewUpdater />
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
-      {districts.length > 0 && (
-          <GeoJSON data={districtsData} style={getDistrictStyle} />
-        )}
+      {/* Display district boundaries */}
+      <GeoJSON data={districtsData} style={getDistrictStyle} />
+        {/* Display taluks if selected */}
+        {/* {highlightedTaluks.length > 0 && 
+          <GeoJSON data={highlightedTaluks} style={getTalukStyle} />
+        } */}
       {/* <Marker position={position}> */}
       <Marker
           position={position}
@@ -251,15 +318,19 @@ const getDistrictStyle = (feature) => {
       <GeoJSON data={geodata1} style={style} />
       {showState && <GeoJSON data={geodata2} />}
       {showDistrict && <GeoJSON data={geodata3}/>}
-      {showTaluk && <GeoJSON data={geodata4}/>}    
+      {showTaluk && <GeoJSON data={geodata4} style={getTalukStyle}/>}    
     </MapContainer>
 
     <div className={styles.DistrictDropdown}>
       {/* Use the DistrictDropdown component here and pass the handleDistrictSelect callback */}
-    <DistrictDropdown onDistrictSelect={handleDistrictSelect} selectedDistrictId={selectedDistrictId} setSelectedDistrictId={setSelectedDistrictId}/>
+      <DistrictDropdown
+        onSelect={handleDistrictSelect} // Pass parent handler for district selection
+        onDistrictSelect={handleDistrictSelect} // Pass parent handler for taluk selection
+        selectedDistrictId={selectedDistrictId}
+        setSelectedDistrictId={setSelectedDistrictId}
+        setHighlightedTaluks={setHighlightedTaluks} // Pass down the function to update highlighted taluks
+      />  
     </div>
-    
-
     <div className={styles.buttonContainer}>
         <button  onClick={handleToggleState}>
           {showState ? 'Hide State Layer' : 'Show State Layer'}

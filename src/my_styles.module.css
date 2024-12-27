@@ -16,3 +16,10 @@
     top: 7%;
     left: 10%;
 }
+
+.HeatMap{
+    display: flex;
+    position: fixed;
+    top: 20%;
+    left: 25%;
+}

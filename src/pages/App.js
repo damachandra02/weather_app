@@ -1,19 +1,30 @@
 import React,{useEffect,useState}from 'react';
-import { MapContainer, TileLayer, Marker, Popup ,GeoJSON,useMap} from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-//import geodata from './india_district_states.json';   //contains all state and district border
-import geodata1 from './india_district.json';           // contains all state borders
-import geodata2 from './State.json';               //Karnataka state border
-import geodata3 from './District.json';            //District border
-import geodata4 from './Taluk.json';               //Taluk border
-import styles from './my_styles.module.css';
-import fetchWeather from './weatherApi';  // Import the fetchWeather function
-import DistrictDropdown from './DistrictDropdown'; // Importing the DistrictDropdown component
-import districtsData from './District.json';  // Import the districts GeoJSON
-import HeatMap from './heat_map'; // Import the HeatMap component
-import talukData from './Taluk.json'; // Taluk data
-import HeatMap1 from './heat_map1'; // Import the HeatMap component
+
+// Correct paths for data imports
+import geodata1 from '../data/india_district.json'; // contains all state borders
+import geodata2 from '../data/State.json';         // Karnataka state border
+import geodata3 from '../data/District.json';      // District border
+import geodata4 from '../data/Taluk.json';         // Taluk border
+
+// Correct path for styles
+import styles from '../assets/my_styles.module.css';
+
+// Correct path for services
+import fetchWeather from '../services/weatherApi';
+
+// Correct paths for components
+import DistrictDropdown from '../components/DistrictDropdown'; 
+import districtsData from '../data/District.json'; 
+import HeatMap from '../components/heat_map'; 
+import talukData from '../data/Taluk.json';
+import HeatMap1 from '../components/heat_map1';
+
+// Correct path for pages
+import WeatherData from '../pages/WeatherData';
+
 
 
 
@@ -342,8 +353,12 @@ const getTalukStyle = (feature) => {
           {showTaluk ? 'Hide Taluk Layer' : 'Show Taluk Layer'}
         </button>
       </div>
+      <div>
+      <WeatherData />
+    </div>
     </div>
   );
+  
 };
 
 export default MyMap;

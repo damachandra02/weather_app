@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import talukData from './Taluk1.json'; // Assuming this contains all taluk data
-import districtsData from './District.json';  // Adjust the path according to your file location
+import talukData from '../data/Taluk1.json'; // Assuming this contains all taluk data
+import districtsData from '../data/District.json';  // Adjust the path according to your file location
 
 const DistrictDropdown = ({
   onSelect,

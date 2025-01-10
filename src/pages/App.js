@@ -2,6 +2,7 @@ import React,{useEffect,useState}from 'react';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import ColorbarComponent  from '../components/colorbar.js';
 
 // Correct paths for data imports
 import geodata1 from '../data/india_district.json'; // contains all state borders
@@ -20,7 +21,7 @@ import DistrictDropdown from '../components/DistrictDropdown';
 import districtsData from '../data/District.json'; 
 import HeatMap from '../components/heat_map'; 
 import talukData from '../data/Taluk.json';
-import HeatMap1 from '../components/heat_map1';
+// import HeatMap1 from '../components/heat_map1';
 
 // Correct path for pages
 import WeatherData from '../pages/WeatherData';
@@ -329,7 +330,8 @@ const getTalukStyle = (feature) => {
       <GeoJSON data={geodata1} style={style} />
       {showState && <GeoJSON data={geodata2} />}
       {showDistrict && <GeoJSON data={geodata3}/>}
-      {showTaluk && <GeoJSON data={geodata4} style={getTalukStyle}/>}    
+      {showTaluk && <GeoJSON data={geodata4} style={getTalukStyle}/>} 
+      <ColorbarComponent />   
     </MapContainer>
 
     <div className={styles.DistrictDropdown}>
@@ -353,9 +355,7 @@ const getTalukStyle = (feature) => {
           {showTaluk ? 'Hide Taluk Layer' : 'Show Taluk Layer'}
         </button>
       </div>
-      <div>
-      <WeatherData />
-    </div>
+      
     </div>
   );
   
